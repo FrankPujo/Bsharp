@@ -1,0 +1,3 @@
+A -> Point 0; 2
+A' -> Point 0; 3
+B -> Point 1; 4
