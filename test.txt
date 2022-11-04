@@ -1,5 +1,0 @@
-A -> Point 0 ; 2
-B -> Point 2 ; 5
-r -> Rect 3x - 1
-s -> Rect 1x + 2
-? A [ s
