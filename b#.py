@@ -17,7 +17,7 @@ expPoints = {}
 expRects = {}
 
 # useful variables
-lastValue = 0
+lastElement = 0
 
 # define a point
 class Point:
@@ -36,39 +36,48 @@ class Rect:
 	def __init__( self, name, rawDef ):
 		# define
 		definition = "".join( tok for tok in rawDef )
-		params = definition.split("x")
+		params1 = definition.split("x")
 		self.name = name
-		self.m = int(params[0])
-		self.q = int(params[1])
+		self.a = int(params1[0])
+		params2 = params1[1].split("y")
+		self.b = int(params2[0])
+		self.c = int(params2[1])
 		# exportable
-		expRects[self.name] = { "m": self.m, "q": self.q }
+		expRects[self.name] = { "a": self.a, "b": self.b, "c": self.c }
 
 # check if a point belongs to a rect
 def checkPointBelongRect( point, rect ):
-	rectM = rects.get( rect ).m
-	rectQ = rects.get( rect ).q
+	rectA = rects.get( rect ).a
+	rectB = rects.get( rect ).b
+	rectC = rects.get( rect ).c
 	pX = points.get( point ).x
 	pY = points.get( point ).y
-	return int(pY) == int(pX) * int(rectM) + int(rectQ)
+	return pX * rectA + pY * rectB + rectC == 0
 
 # read file line by line - Main loop -
 for line in lines:
 	tokens = line.split(" ")
-	if tokens[1] == "->":
+	if tokens[0] == "log":
+		print( lastElement )
+	elif tokens[1] == "->":
 		# definitions
 		name = tokens[0]
 		objType = tokens[2]
 		if objType == "Point":
 			# define point
 			points[name] = Point( name, tokens[3:] )
+			# loggable
+			lastElement = name + "(" + str(points[name].x) + ";" + str(points[name].y) + ")"
 		elif objType == "Rect" or objType == "Line":
 			# define line
 			rects[name] = Rect( name, tokens[3:] )
+			# loggable
+			lastElement = name + str(rects[name].a) + "x " + str(rects[name].b) + "y " + str(rects[name].c) + " = 0"
 	elif tokens[0] == "?":
 		# conditions
 		if tokens[2] == "[":
 			# point on line
-			lastValue = checkPointBelongRect( tokens[1], tokens[3] )
+			lastElement = checkPointBelongRect( tokens[1], tokens[3] )
 
 # export
 if len( sys.argv ) > 2:
@@ -80,5 +89,3 @@ if len( sys.argv ) > 2:
 		origFile = sys.argv[1]
 		file = open( origFile[:-3] + "json" , "w" )
 		json_data = json.dump( data, file )
-# test some stuff
-#print( lastValue )
